@@ -12,11 +12,11 @@ operators = {
     'list': true,
     'init': true,
     'config': true,
-    'install': true,
     'version': true,
     'help': './help',
     'outdated': true,
-    'uninstall': true
+    'uninstall': true,
+    'install': './install'
 }
 
 export default {
