@@ -6,7 +6,7 @@ import output from './utils/output'
 
 let commands = [...Object.keys(defs.alias), ...Object.keys(defs.operators)]
 
-export function completion () {
+export function *completion() {
     output([
         '',
         'Usage: chef-cli <command>',
@@ -15,7 +15,7 @@ export function completion () {
         `    ${wrap(commands)}`,
         '',
         'Specify configs in the ini-formatted file:',
-        `    ${rc('chef').path}`,
+        `    ${(yield rc('chef')).path}`,
         '',
         `chef-cli@${config.version} ${path.dirname(__dirname)}`
     ])

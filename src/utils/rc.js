@@ -1,21 +1,21 @@
-import fs from 'fs'
 import ini from 'ini'
+import fs from 'co-fs'
 import defs from './defs'
 
-export default function(name, data) {
+export default function *rc (name, data) {
     let rcPath = `${defs.defaults.homePath}/.${name}rc`
-    
-    if(!fs.existsSync(rcPath)) {
-        fs.writeFileSync(rcPath, '', 'utf8')
+
+    if(!(yield fs.exists(rcPath))) {
+        yield fs.writeFile(rcPath, '', 'utf8')
     }
 
     if(data) {
-        fs.writeFileSync(rcPath, serialize(data), 'utf8')
+        yield fs.writeFile(rcPath, serialize(data), 'utf8')
     }
 
     return {
         path: rcPath,
-        data: data ? {} : unserialize(fs.readFileSync(rcPath, 'utf8'))
+        data: data ? {} : unserialize(yield fs.readFile(rcPath, 'utf8'))
     }
 }
 

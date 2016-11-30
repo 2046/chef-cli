@@ -1,3 +1,4 @@
+import co from 'co'
 import { exists, mkdir } from './fs'
 
 let alias, operators, defaults, win, home
@@ -30,9 +31,11 @@ defaults = {
     registry: 'https://github.com/2046/'
 }
 
-if(!exists(defaults.pkgPath)) {
-    mkdir(defaults.pkgPath)
-}
+co(function *() {
+    if(!(yield exists(defaults.pkgPath))) {
+        yield mkdir(defaults.pkgPath)
+    }
+})
 
 export default {
     alias,

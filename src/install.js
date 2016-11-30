@@ -6,7 +6,7 @@ import Progress from 'progress'
 import output from './utils/output'
 import { mkdir, exists } from './utils/fs'
 
-export function completion (templateName) {
+export function *completion(templateName) {
     let path, vars, url
 
     path = `${defs.defaults.pkgPath}${templateName}`
@@ -17,8 +17,8 @@ export function completion (templateName) {
         output(['ERROR: install operator must be enter template parameters', ''], true)
     }
 
-    if(!exists(path)) {
-        mkdir(path)
+    if(!(yield exists(path))) {
+        yield mkdir(path)
     }
 
     request(url).on('response', (res) => {
