@@ -1,5 +1,7 @@
 import fs from 'fs'
+import os from 'os'
 import rc from './utils/rc'
+import { parse } from 'path'
 import request from 'request'
 import defs from './utils/defs'
 import Progress from 'progress'
@@ -21,27 +23,42 @@ export function *completion(templateName) {
         yield mkdir(path)
     }
 
-    request(url).on('response', (res) => {
-        let total, progress
+    try {
+        yield download(url)
+    }catch(err) {
+        output([err, ''], true)
+    }
+}
 
-        total = parseInt(res.headers['content-length'], 10)
+function *download(url) {
+    return new Promise((resolve, reject) => {
+        request(url).on('response', (res) => {
+            let total, progress, dest
 
-        if(isNaN(total)){
-            output(['can not find the remote file', ''], true)
-        }
+            total = parseInt(res.headers['content-length'], 10)
+            dest = `${os.tmpdir()}/${Date.now()}${parse(url).ext}`
 
-        progress = new Progress('Downloading... [:bar] :percent :etas', {
-            complete : '=',
-            incomplete : ' ',
-            total : total
+            if(isNaN(total)){
+                reject('can not find the remote file')
+                return
+            }
+
+            progress = new Progress('Downloading... [:bar] :percent :etas', {
+                complete : '=',
+                incomplete : ' ',
+                total : total
+            })
+
+            res.on('data', function(chunk){
+                progress.tick(chunk.length)
+            }).pipe(fs.createWriteStream(dest))
+
+            res.on('end', function(){
+                progress.tick(progress.total - progress.curr)
+                resolve(dest)
+            })
+        }).on('error', (err) => {
+            reject(err.message)
         })
-
-        res.on('data', function(chunk){
-            progress.tick(chunk.length)
-        }).pipe(fs.createWriteStream(`${path}/master.zip`))
-
-        res.on('end', function(){
-            progress.tick(progress.total - progress.curr)
-        })
-    }).on('error', (err) => console.log.bind(console, err))
+    })
 }
