@@ -1,4 +1,9 @@
-let alias, operators
+import { exists, mkdir } from './fs'
+
+let alias, operators, defaults, win, home
+
+win = process.platform === 'win32'
+home = win ? process.env.USERPROFILE : process.env.HOME
 
 alias = {
     'h': 'help',
@@ -19,7 +24,18 @@ operators = {
     'install': './install'
 }
 
+defaults = {
+    homePath: home,
+    pkgPath: `${home}/.chef/`,
+    registry: 'https://github.com/2046/'
+}
+
+if(!exists(defaults.pkgPath)) {
+    mkdir(defaults.pkgPath)
+}
+
 export default {
     alias,
+    defaults,
     operators
 }

@@ -1,55 +1,47 @@
-import os from 'os'
 import fs from 'fs'
-import rimraf from 'rimraf'
+import rc from './utils/rc'
 import request from 'request'
+import defs from './utils/defs'
 import Progress from 'progress'
 import output from './utils/output'
-import { parse, resolve, relative } from 'path'
+import { mkdir, exists } from './utils/fs'
 
 export function completion (templateName) {
-    let url, templatePath
+    let path, vars, url
 
-    templatePath = `${os.tmpdir()}/chef-template/${templateName}`
-    url = `https://github.com/2046/${templateName}/archive/master.zip`
+    path = `${defs.defaults.pkgPath}${templateName}`
+    vars = Object.assign({}, defs.defaults, rc('chef').data)
+    url = `${vars.registry}${templateName}/archive/master.zip`
 
     if(!templateName) {
-        output([
-            'ERROR: install operator must be enter template parameters',
-            ''
-        ])
-
-        process.exit(1)
+        output(['ERROR: install operator must be enter template parameters', ''], true)
     }
 
-    if(!fs.existsSync(templatePath)) {
-        request(url).on('response', (res) => {
-            let total, progress, path
+    if(!exists(path)) {
+        mkdir(path)
+    }
 
-            path = parse(url).base
-            total = parseInt(res.headers['content-length'], 10)
+    request(url).on('response', (res) => {
+        let total, progress
 
-            if(isNaN(total)){
-                console.log('can not find the remote file')
-                return
-            }
+        total = parseInt(res.headers['content-length'], 10)
 
-            process.on('exit', function () {
-                rimraf.sync(templatePath)
-            })
+        if(isNaN(total)){
+            output(['can not find the remote file', ''], true)
+        }
 
-            progress = new Progress('Downloading... [:bar] :percent :etas', {
-                complete : '=',
-                incomplete : ' ',
-                total : total
-            })
-
-            res.on('data', function(chunk){
-                progress.tick(chunk.length)
-            }).pipe(fs.createWriteStream(templatePath))
-
-            res.on('end', function(){
-                progress.tick(progress.total - progress.curr)
-            })
+        progress = new Progress('Downloading... [:bar] :percent :etas', {
+            complete : '=',
+            incomplete : ' ',
+            total : total
         })
-    }
+
+        res.on('data', function(chunk){
+            progress.tick(chunk.length)
+        }).pipe(fs.createWriteStream(`${path}/master.zip`))
+
+        res.on('end', function(){
+            progress.tick(progress.total - progress.curr)
+        })
+    }).on('error', (err) => console.log.bind(console, err))
 }

@@ -1,14 +1,10 @@
 import fs from 'fs'
 import ini from 'ini'
-
-let win, home
-
-win = process.platform === 'win32'
-home = win ? process.env.USERPROFILE : process.env.HOME
+import defs from './defs'
 
 export default function(name, data) {
-    let rcPath = `${home}/.${name}rc`
-
+    let rcPath = `${defs.defaults.homePath}/.${name}rc`
+    
     if(!fs.existsSync(rcPath)) {
         fs.writeFileSync(rcPath, '', 'utf8')
     }
