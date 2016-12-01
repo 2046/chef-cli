@@ -16,9 +16,9 @@ alias = {
 
 operators = {
     'list': true,
-    'init': true,
     'config': true,
     'version': true,
+    'init': './init',
     'help': './help',
     'outdated': true,
     'uninstall': true,

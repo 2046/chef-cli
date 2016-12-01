@@ -1,15 +1,17 @@
 import fs from 'fs'
 import os from 'os'
+import co from 'co'
 import rc from './utils/rc'
 import { parse } from 'path'
 import request from 'request'
 import defs from './utils/defs'
 import Progress from 'progress'
+import tree from './utils/tree'
 import output from './utils/output'
-import { mkdir, exists } from './utils/fs'
+import { mkdir, exists, unzip, rmdir, rm, cp } from './utils/fs'
 
 export function *completion(templateName) {
-    let path, vars, url
+    let path, vars, url, zip
 
     path = `${defs.defaults.pkgPath}${templateName}`
     vars = Object.assign({}, defs.defaults, rc('chef').data)
@@ -19,18 +21,15 @@ export function *completion(templateName) {
         output(['ERROR: install operator must be enter template parameters', ''], true)
     }
 
-    if(!(yield exists(path))) {
-        yield mkdir(path)
-    }
-
     try {
-        yield download(url)
+        zip = yield download(url)
+        yield generate(zip, path)
     }catch(err) {
         output([err, ''], true)
     }
 }
 
-function *download(url) {
+function *download(url, again) {
     return new Promise((resolve, reject) => {
         request(url).on('response', (res) => {
             let total, progress, dest
@@ -39,7 +38,14 @@ function *download(url) {
             dest = `${os.tmpdir()}/${Date.now()}${parse(url).ext}`
 
             if(isNaN(total)){
-                reject('can not find the remote file')
+                if(again) {
+                    reject('can not find the remote file')
+                }else {
+                    co(function* (){
+                        return yield download(url, true)
+                    }).then(resolve, reject)
+                }
+
                 return
             }
 
@@ -61,4 +67,22 @@ function *download(url) {
             reject(err.message)
         })
     })
+}
+
+function *generate(zip, dest) {
+    let src, info
+
+    if(!(yield exists(dest))) {
+        yield mkdir(dest)
+    }
+
+    info = parse(zip)
+    src = yield unzip(zip, `${info.dir}/${info.name}`)
+    src = `${src}/${parse(dest).base}-master`
+
+    yield cp(src, dest)
+    yield rmdir(src)
+    yield rm(zip)
+
+    return dest
 }
