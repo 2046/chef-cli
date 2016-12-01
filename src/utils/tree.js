@@ -1,45 +1,28 @@
-import npm from 'npm'
+import fs from 'co-fs'
+import { join } from 'path'
 import treeify from 'treeify'
 
-function deps(name, cb) {
-    return npm.commands.view([name], true, (err, retval) => {
-        if (err != null) {
-            return cb(err)
-        }
+export default function *tree(path) {
+    let config = require(`${path}/package.json`)
 
-        let dependencies = Object.keys(retval[Object.keys(retval)[0]].dependencies)
-
-        return async.parallel(_(dependencies).map(subdeps), function(err, results) {
-            return cb(err, _(results).reduce(function(memo, obj) {
-                return _(memo).extend(obj)
-            }, {}))
-        })
-    })
+    return [
+        `${config.name}@${config.version} ${path}`,
+        treeify.asTree(yield treeObj(path)),
+    ]
 }
 
-function npmTree(path, cb) {
-    return npm.load(function() {
-        return deps(path, cb)
-    })
-}
+function *treeObj(path) {
+    let result = {}
 
-export default function(path) {
-    npmTree(path, (err, result) => {
-        console.log(result)
-    })
+    for(let item of yield fs.readdir(path)) {
+        let tmp = join(path, item)
 
-    console.log(treeify.asTree({
-        oranges: {
-            mandarin: {
-                clementine: {},
-                tangerine: {}
-            }
-        },
-        apples: {
-            gala: {},
-            pink: {}
+        if((yield fs.lstat(tmp)).isDirectory()) {
+            result[item] = yield treeObj(tmp)
+        }else {
+            result[item] = {}
         }
-    }))
+    }
 
-    exit && process.exit(1)
+    return result
 }

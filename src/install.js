@@ -23,10 +23,12 @@ export function *completion(templateName) {
 
     try {
         zip = yield download(url)
-        yield generate(zip, path)
     }catch(err) {
         output([err, ''], true)
     }
+
+    yield generate(zip, path)
+    output(yield tree(path), true)
 }
 
 function *download(url, again) {
@@ -50,9 +52,9 @@ function *download(url, again) {
             }
 
             progress = new Progress('Downloading... [:bar] :percent :etas', {
-                complete : '=',
                 incomplete : ' ',
-                total : total
+                total : total,
+                clear: true
             })
 
             res.on('data', function(chunk){
