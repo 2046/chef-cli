@@ -4,7 +4,7 @@ import defs from './utils/defs'
 import config from '../package'
 import output from './utils/output'
 
-let commands = [...Object.keys(defs.alias), ...Object.keys(defs.operators)]
+let commands = [...Object.keys(defs.alias), ...Object.keys(defs.operators)].filter(key => key[0] !== '-')
 
 export function *completion() {
     output([

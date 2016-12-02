@@ -1,4 +1,3 @@
-import fs from 'co-fs'
 import defs from './utils/defs'
 import tree from './utils/tree'
 import output from './utils/output'

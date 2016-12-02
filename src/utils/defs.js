@@ -11,17 +11,19 @@ alias = {
     'ls': 'list',
     'c': 'config',
     'i': 'install',
-    'v': 'version'
+    'v': 'version',
+    '-v': 'version'
 }
 
 operators = {
     'config': true,
-    'version': true,
     'list': './list',
     'init': './init',
     'help': './help',
     'outdated': true,
     'uninstall': true,
+    'clear': './clear',
+    'version': './version',
     'install': './install'
 }
 
