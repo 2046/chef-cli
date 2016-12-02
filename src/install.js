@@ -13,7 +13,7 @@ import { mkdir, exists, unzip, rmdir, rm, cp } from './utils/fs'
 export function *completion(templateName) {
     let path, vars, url, zip
 
-    path = `${defs.defaults.pkgPath}${templateName}`
+    path = `${defs.defaults.pkgPath}/${templateName}`
     vars = Object.assign({}, defs.defaults, rc('chef').data)
     url = `${vars.registry}${templateName}/archive/master.zip`
 

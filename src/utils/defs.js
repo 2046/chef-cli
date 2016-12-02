@@ -1,5 +1,5 @@
-import co from 'co'
-import { exists, mkdir } from './fs'
+import fs from 'fs'
+import config from '../../package'
 
 let alias, operators, defaults, win, home
 
@@ -15,9 +15,9 @@ alias = {
 }
 
 operators = {
-    'list': true,
     'config': true,
     'version': true,
+    'list': './list',
     'init': './init',
     'help': './help',
     'outdated': true,
@@ -27,15 +27,16 @@ operators = {
 
 defaults = {
     homePath: home,
-    pkgPath: `${home}/.chef/`,
-    registry: 'https://github.com/2046/'
+    name: config.name,
+    version: config.version,
+    pkgPath: `${home}/.chef`,
+    registry: 'https://github.com/2046/',
+    pkgConfigPath: `${home}/.chef/package.json`
 }
 
-co(function *() {
-    if(!(yield exists(defaults.pkgPath))) {
-        yield mkdir(defaults.pkgPath)
-    }
-})
+if(!fs.existsSync(defaults.pkgPath)) {
+    fs.mkdirSync(defaults.pkgPath)
+}
 
 export default {
     alias,

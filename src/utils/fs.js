@@ -65,3 +65,27 @@ export function *cp(path, dest) {
         })
     })
 }
+
+export function *isEmpty(path) {
+    if(!exists(path)) {
+        return false
+    }
+
+    if((yield fs.lstat(path)).isDirectory()) {
+        let result = []
+
+        for(let item of yield fs.readdir(path)) {
+            if(item[0] === '.') {
+                continue
+            }
+
+            result.push(item)
+        }
+
+        return Boolean(result.length)
+    }else {
+        let data = yield fs.readFile(path)
+
+        return Boolean(data) || Boolean(data.length)
+    }
+}

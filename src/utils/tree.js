@@ -2,12 +2,16 @@ import fs from 'co-fs'
 import { join } from 'path'
 
 export default function *tree(path) {
-    let config = require(`${path}/package.json`)
+    let output = []
 
-    return [
-        `${config.name}@${config.version} ${path}`,
-        treeify(yield treeObj(path)),
-    ]
+    try {
+        let config = require(`${path}/package.json`)
+        output.push(`${config.name}@${config.version} ${path}`)
+    }catch(e) {}
+
+    output.push(treeify(yield treeObj(path)))
+
+    return output
 }
 
 function *treeObj(path) {
@@ -15,6 +19,10 @@ function *treeObj(path) {
 
     for(let item of yield fs.readdir(path)) {
         let tmp = join(path, item)
+        
+        if(item[0] === '.') {
+            continue
+        }
 
         if((yield fs.lstat(tmp)).isDirectory()) {
             result[item] = yield treeObj(tmp)
