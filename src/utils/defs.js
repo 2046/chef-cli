@@ -16,15 +16,15 @@ alias = {
 }
 
 operators = {
-    'config': true,
     'list': './list',
     'init': './init',
     'help': './help',
     'outdated': true,
-    'uninstall': true,
     'clear': './clear',
+    'config': './config',
     'version': './version',
-    'install': './install'
+    'install': './install',
+    'uninstall': './uninstall'
 }
 
 defaults = {

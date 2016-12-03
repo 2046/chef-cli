@@ -3,11 +3,18 @@ import tree from './utils/tree'
 import output from './utils/output'
 import { isEmpty } from './utils/fs'
 
-export function *completion() {
-    if(yield isEmpty(defs.defaults.pkgPath)) {
-        output([
-            `${defs.defaults.name}@${defs.defaults.version} ${defs.defaults.pkgPath}`,
-            ...yield tree(defs.defaults.pkgPath)
-        ], true)
+export function *completion(templateName) {
+    let path, txt
+
+    txt = []
+    path = templateName ? `${defs.defaults.pkgPath}/${templateName}` : defs.defaults.pkgPath
+
+    if(yield isEmpty(path)) {
+        if(!templateName) {
+            txt.push(`${defs.defaults.name}@${defs.defaults.version} ${path}`)    
+        }
+
+        txt.push(...yield tree(path))
+        output(txt, true)
     }
 }

@@ -7,7 +7,9 @@ export default function *tree(path) {
     try {
         let config = require(`${path}/package.json`)
         output.push(`${config.name}@${config.version} ${path}`)
-    }catch(e) {}
+    }catch(e) {
+        output.push(`${path}`)
+    }
 
     output.push(treeify(yield treeObj(path)))
 
@@ -19,7 +21,7 @@ function *treeObj(path) {
 
     for(let item of yield fs.readdir(path)) {
         let tmp = join(path, item)
-        
+
         if(item[0] === '.') {
             continue
         }
