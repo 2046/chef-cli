@@ -11,10 +11,10 @@ export function *completion(templateName) {
 
     if(yield isEmpty(path)) {
         if(!templateName) {
-            txt.push(`${defs.defaults.name}@${defs.defaults.version} ${path}`)    
+            txt.push(`${defs.defaults.name}@${defs.defaults.version} ${path}`)
         }
 
         txt.push(...yield tree(path))
-        output(txt, true)
+        output(txt)
     }
 }

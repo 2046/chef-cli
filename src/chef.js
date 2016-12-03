@@ -1,13 +1,14 @@
 import co from 'co'
 import defs from './utils/defs'
 import config from '../package'
-import output from './utils/output'
 import { checkEnv } from './utils/check'
 
 co(function *() {
     let args, operator
 
-    checkEnv()
+    if(!checkEnv()) {
+        process.exit(1)
+    }
 
     process.title = config.name
 

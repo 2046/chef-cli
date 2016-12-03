@@ -18,17 +18,17 @@ export function *completion(templateName) {
     url = `${vars.registry}${templateName}/archive/master.zip`
 
     if(!templateName) {
-        output(['ERROR: install operator must be enter template parameters', ''], true)
+        output(['ERROR: install operator must be enter template parameters', ''])
     }
 
     try {
         zip = yield download(url)
     }catch(err) {
-        output([err, ''], true)
+        output([err, ''])
     }
 
     yield generate(zip, path)
-    output(yield tree(path), true)
+    output(yield tree(path))
 }
 
 function *download(url, again) {

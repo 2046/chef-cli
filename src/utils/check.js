@@ -11,8 +11,12 @@ export function checkEnv() {
             `You'll need to upgrade to a newer version in order to use this`,
             'version of npm. You can find the latest version at https://nodejs.org/',
             ''
-        ], true)
+        ])
+
+        return false
     }
+
+    return true
 }
 
 function checkVersion(version) {

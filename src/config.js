@@ -5,7 +5,7 @@ export function *completion(op, key, val) {
     let vars = (yield rc('chef')).data
 
     if(op === 'get' && key) {
-        output([vars[key], ''], true)
+        output([vars[key], ''])
     }
 
     if(op === 'set' && key && val) {

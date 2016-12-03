@@ -19,11 +19,11 @@ operators = {
     'list': './list',
     'init': './init',
     'help': './help',
-    'outdated': true,
     'clear': './clear',
     'config': './config',
     'version': './version',
     'install': './install',
+    'outdate': './outdate',
     'uninstall': './uninstall'
 }
 
@@ -32,8 +32,7 @@ defaults = {
     name: config.name,
     version: config.version,
     pkgPath: `${home}/.chef`,
-    registry: 'https://github.com/2046/',
-    pkgConfigPath: `${home}/.chef/package.json`
+    registry: 'https://github.com/2046/'
 }
 
 if(!fs.existsSync(defaults.pkgPath)) {
