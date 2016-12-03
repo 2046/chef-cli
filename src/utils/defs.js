@@ -1,4 +1,5 @@
 import fs from 'fs'
+import { sep } from 'path'
 import config from '../../package'
 
 let alias, operators, defaults, win, home
@@ -31,7 +32,7 @@ defaults = {
     homePath: home,
     name: config.name,
     version: config.version,
-    pkgPath: `${home}/.chef`,
+    pkgPath: `${home}${sep}.chef`,
     registry: 'https://github.com/2046/'
 }
 

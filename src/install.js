@@ -1,19 +1,20 @@
 import fs from 'fs'
 import os from 'os'
 import co from 'co'
+import ora from 'ora'
 import rc from './utils/rc'
-import { parse } from 'path'
 import request from 'request'
 import defs from './utils/defs'
 import Progress from 'progress'
 import tree from './utils/tree'
+import { parse, sep } from 'path'
 import output from './utils/output'
 import { mkdir, exists, unzip, rmdir, rm, cp } from './utils/fs'
 
 export function *completion(templateName) {
     let path, vars, url, zip
 
-    path = `${defs.defaults.pkgPath}/${templateName}`
+    path = `${defs.defaults.pkgPath}${sep}${templateName}`
     vars = Object.assign({}, defs.defaults, rc('chef').data)
     url = `${vars.registry}${templateName}/archive/master.zip`
 
@@ -23,23 +24,26 @@ export function *completion(templateName) {
 
     try {
         zip = yield download(url)
+        yield generate(zip, path)
+        output(yield tree(path))
     }catch(err) {
         output([err, ''])
     }
-
-    yield generate(zip, path)
-    output(yield tree(path))
 }
 
 function *download(url, again) {
+    let spinner = ora('Downloading...').start()
+
     return new Promise((resolve, reject) => {
         request(url).on('response', (res) => {
             let total, progress, dest
 
             total = parseInt(res.headers['content-length'], 10)
-            dest = `${os.tmpdir()}/${Date.now()}${parse(url).ext}`
+            dest = `${os.tmpdir()}${sep}${Date.now()}${parse(url).ext}`
 
             if(isNaN(total)){
+                spinner.stop()
+
                 if(again) {
                     reject('can not find the remote file')
                 }else {
@@ -51,6 +55,7 @@ function *download(url, again) {
                 return
             }
 
+            spinner.stop()
             progress = new Progress('Downloading... [:bar] :percent :etas', {
                 incomplete : ' ',
                 total : total,
@@ -66,6 +71,7 @@ function *download(url, again) {
                 resolve(dest)
             })
         }).on('error', (err) => {
+            spinner.stop()
             reject(err.message)
         })
     })
@@ -79,8 +85,8 @@ function *generate(zip, dest) {
     }
 
     info = parse(zip)
-    src = yield unzip(zip, `${info.dir}/${info.name}`)
-    src = `${src}/${parse(dest).base}-master`
+    src = yield unzip(zip, `${info.dir}${sep}${info.name}`)
+    src = `${src}${sep}${parse(dest).base}-master`
 
     yield cp(src, dest)
     yield rmdir(src)

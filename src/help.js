@@ -1,5 +1,5 @@
-import path from 'path'
 import rc from './utils/rc'
+import { dirname } from 'path'
 import defs from './utils/defs'
 import config from '../package'
 import output from './utils/output'
@@ -17,7 +17,7 @@ export function *completion() {
         'Specify configs in the ini-formatted file:',
         `    ${(yield rc('chef')).path}`,
         '',
-        `chef-cli@${config.version} ${path.dirname(__dirname)}`
+        `chef-cli@${config.version} ${dirname(__dirname)}`
     ])
 }
 

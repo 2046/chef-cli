@@ -1,11 +1,11 @@
 import fs from 'co-fs'
-import { join } from 'path'
+import { join, sep } from 'path'
 
 export default function *tree(path) {
     let output = []
 
     try {
-        let config = require(`${path}/package.json`)
+        let config = require(`${path}${sep}package.json`)
         output.push(`${config.name}@${config.version} ${path}`)
     }catch(e) {
         output.push(`${path}`)

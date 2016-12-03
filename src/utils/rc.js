@@ -1,9 +1,10 @@
 import ini from 'ini'
 import fs from 'co-fs'
 import defs from './defs'
+import { sep } from 'path'
 
 export default function *rc (name, data) {
-    let path = `${defs.defaults.homePath}/.${name}rc`
+    let path = `${defs.defaults.homePath}${sep}.${name}rc`
 
     if(!(yield fs.exists(path))) {
         yield fs.writeFile(path, '', 'utf8')
@@ -12,7 +13,7 @@ export default function *rc (name, data) {
     if(data) {
         yield fs.writeFile(path, serialize(data), 'utf8')
     }
-    
+
     return {
         path,
         data: data ? {} : unserialize(yield fs.readFile(path, 'utf8'))

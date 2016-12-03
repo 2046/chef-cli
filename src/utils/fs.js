@@ -3,6 +3,7 @@ import ncp from 'ncp'
 import fs from 'co-fs'
 import extract from 'unzip'
 import { join } from 'path'
+import inquirer from 'inquirer'
 
 export function *exists(path) {
     return yield fs.exists(path)
@@ -67,8 +68,8 @@ export function *cp(path, dest) {
 }
 
 export function *isEmpty(path) {
-    if(!exists(path)) {
-        return false
+    if(!(yield exists(path))) {
+        return true
     }
 
     if((yield fs.lstat(path)).isDirectory()) {
@@ -82,10 +83,22 @@ export function *isEmpty(path) {
             result.push(item)
         }
 
-        return Boolean(result.length)
+        return !result.length
     }else {
         let data = yield fs.readFile(path)
 
-        return Boolean(data) || Boolean(data.length)
+        return !data || !result.length
     }
+}
+
+export function *confirm(message) {
+    return new Promise((resolve, reject) => {
+        inquirer.prompt([{
+            message,
+            name: 'ok',
+            type: 'confirm'
+        }]).then((answers) => {
+            resolve(answers.ok)
+        })
+    })
 }

@@ -1,12 +1,12 @@
 import ora from 'ora'
 import fs from 'co-fs'
 import rc from './utils/rc'
-import { parse } from 'path'
 import request from 'request'
 import defs from './utils/defs'
 import table from './utils/table'
-import { exists } from './utils/fs'
+import { parse, sep } from 'path'
 import output from './utils/output'
+import { exists, isEmpty } from './utils/fs'
 
 const spinner = ora('parseing...')
 
@@ -18,10 +18,15 @@ export function *completion() {
     currentVers = []
     vars = Object.assign({}, defs.defaults, rc('chef').data)
 
+    if(yield isEmpty(defs.defaults.pkgPath)) {
+        spinner.stop()
+        process.exit(1)
+    }
+
     for(let item of yield fs.readdir(defs.defaults.pkgPath)) {
         let path, url
 
-        path = `${defs.defaults.pkgPath}/${item}/package.json`
+        path = `${defs.defaults.pkgPath}${sep}${item}${sep}package.json`
         url = `https://raw.githubusercontent.com/${parse(vars.registry).base}/${item}/master/package.json`
 
         latestVers.push(yield getLatestVersion(url, item))

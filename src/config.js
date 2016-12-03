@@ -13,6 +13,6 @@ export function *completion(op, key, val) {
             val += '/'
         }
 
-        yield rc('chef', Object.assign({}, { [key]: val }, vars))
+        yield rc('chef', Object.assign({}, vars, { [key]: val }))
     }
 }

@@ -1,3 +1,4 @@
+import { sep } from 'path'
 import defs from './utils/defs'
 import tree from './utils/tree'
 import output from './utils/output'
@@ -7,9 +8,9 @@ export function *completion(templateName) {
     let path, txt
 
     txt = []
-    path = templateName ? `${defs.defaults.pkgPath}/${templateName}` : defs.defaults.pkgPath
+    path = templateName ? `${defs.defaults.pkgPath}${sep}${templateName}` : defs.defaults.pkgPath
 
-    if(yield isEmpty(path)) {
+    if(!(yield isEmpty(path))) {
         if(!templateName) {
             txt.push(`${defs.defaults.name}@${defs.defaults.version} ${path}`)
         }
