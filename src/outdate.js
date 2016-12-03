@@ -1,3 +1,4 @@
+import ora from 'ora'
 import fs from 'co-fs'
 import rc from './utils/rc'
 import { parse } from 'path'
@@ -7,9 +8,12 @@ import table from './utils/table'
 import { exists } from './utils/fs'
 import output from './utils/output'
 
+const spinner = ora('parseing...')
+
 export function *completion() {
     let vars, vers, currentVers, latestVers
 
+    spinner.start()
     latestVers = []
     currentVers = []
     vars = Object.assign({}, defs.defaults, rc('chef').data)
@@ -27,6 +31,7 @@ export function *completion() {
     [currentVers, latestVers] = yield Promise.all([currentVers, latestVers])
     vers = currentVers.map((item, index) => [item.name, item.version, latestVers[index].version])
 
+    spinner.stop()
     output([table([['template', 'Current', 'Latest'], ...vers], { align: ['l', 'r', 'r']}), ''])
 }
 
@@ -40,6 +45,8 @@ function *getCurrentVersion(path, name) {
 
 function *getLatestVersion(url, name) {
     return new Promise((resolve, reject) => {
+        spinner.text = `parseing ${name} template`
+
         request(url).on('response', (res) => {
             let data, total
 
