@@ -4,9 +4,5 @@ import defs from './utils/defs'
 import { exists, rmdir } from './utils/fs'
 
 export function *completion(templateName) {
-    let path = `${defs.defaults.pkgPath}${sep}${templateName}`
-
-    if(exists(path)) {
-        yield rmdir(path)
-    }
+    yield rmdir(`${defs.defaults.pkgPath}${sep}${templateName}`)
 }

@@ -28,7 +28,7 @@ export function *mkdir(path) {
 }
 
 export function *rmdir(path) {
-    if(yield fs.exists(path)) {
+    if(yield exists(path)) {
         for(let item of yield fs.readdir(path)) {
             let tmp = join(path, item)
 

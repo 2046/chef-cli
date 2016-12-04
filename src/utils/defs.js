@@ -33,7 +33,7 @@ defaults = {
     name: config.name,
     version: config.version,
     pkgPath: `${home}${sep}.chef`,
-    registry: 'https://github.com/2046/'
+    registry: 'https://github.com/chef-template/'
 }
 
 if(!fs.existsSync(defaults.pkgPath)) {

@@ -2,11 +2,12 @@ import ini from 'ini'
 import fs from 'co-fs'
 import defs from './defs'
 import { sep } from 'path'
+import { exists } from './fs'
 
 export default function *rc (name, data) {
     let path = `${defs.defaults.homePath}${sep}.${name}rc`
 
-    if(!(yield fs.exists(path))) {
+    if(!(yield exists(path))) {
         yield fs.writeFile(path, '', 'utf8')
     }
 

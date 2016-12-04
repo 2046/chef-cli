@@ -9,14 +9,20 @@ import Progress from 'progress'
 import tree from './utils/tree'
 import { parse, sep } from 'path'
 import output from './utils/output'
+import { checkGithubUrl } from './utils/check'
 import { mkdir, exists, unzip, rmdir, rm, cp } from './utils/fs'
 
 export function *completion(templateName) {
     let path, vars, url, zip
 
     path = `${defs.defaults.pkgPath}${sep}${templateName}`
-    vars = Object.assign({}, defs.defaults, rc('chef').data)
-    url = `${vars.registry}${templateName}/archive/master.zip`
+    vars = Object.assign({}, defs.defaults, (yield rc('chef')).data)
+
+    if(checkGithubUrl(vars.registry)) {
+        url = `${vars.registry}${templateName}/archive/master.zip`
+    }else {
+        url = `${vars.registry}${templateName}.zip`
+    }
 
     if(!templateName) {
         output(['ERROR: install operator must be enter template parameters', ''])

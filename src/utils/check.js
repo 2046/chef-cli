@@ -19,6 +19,10 @@ export function checkEnv() {
     return true
 }
 
+export function checkGithubUrl(url) {
+    return url.indexOf('github.com') !== -1
+}
+
 function checkVersion(version) {
     return !semver.satisfies(currentNode, config.engines.node)
 }
