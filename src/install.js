@@ -26,6 +26,7 @@ export function *completion(templateName) {
 
     if(!templateName) {
         output(['ERROR: install operator must be enter template parameters', ''])
+        process.exit(1)
     }
 
     try {

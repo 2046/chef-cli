@@ -1,6 +1,6 @@
 {
   "name": "chef-cli",
-  "version": "0.0.2",
+  "version": "1.0.0",
   "description": "generator",
   "bin": {
     "chef": "./bin/chef"
@@ -37,7 +37,8 @@
     "unzip": "^0.1.11"
   },
   "scripts": {
-    "compile": "node_modules/.bin/babel src -d dist"
+    "compile": "node_modules/.bin/babel src -d dist",
+    "prepublish": "npm run compile"
   },
   "devDependencies": {
     "babel-cli": "^6.18.0",
