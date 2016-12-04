@@ -18,7 +18,7 @@ function* tree(path) {
 
     try {
         let config = require(`${ path }${ _path.sep }package.json`);
-        output.push(`${ config.name }@${ config.version } ${ path }`);
+        output.push(`${ config.name || (0, _path.parse)(path).base }@${ config.version || '0.0.1' } ${ path }`);
     } catch (e) {
         output.push(`${ path }`);
     }
