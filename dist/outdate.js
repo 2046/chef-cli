@@ -66,7 +66,7 @@ function* completion() {
         let path, url;
 
         path = `${ _defs2.default.defaults.pkgPath }${ _path.sep }${ item }${ _path.sep }package.json`;
-        url = (0, _check.checkGithubUrl)(vars.registry) ? `${ baseUrl }/${ item }/master/package.json` : `${ baseUrl }/${ item }/package.json`;
+        url = (0, _check.checkGithubUrl)(vars.registry) ? `${ baseUrl }${ item }/master/package.json` : `${ baseUrl }${ item }/package.json`;
         latestVers.push((yield getLatestVersion(url, item)));
         currentVers.push((yield getCurrentVersion(path, item)));
     }

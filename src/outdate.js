@@ -34,7 +34,7 @@ export function *completion() {
         let path, url
 
         path = `${defs.defaults.pkgPath}${sep}${item}${sep}package.json`
-        url = checkGithubUrl(vars.registry) ? `${baseUrl}/${item}/master/package.json` : `${baseUrl}/${item}/package.json`
+        url = checkGithubUrl(vars.registry) ? `${baseUrl}${item}/master/package.json` : `${baseUrl}${item}/package.json`
         latestVers.push(yield getLatestVersion(url, item))
         currentVers.push(yield getCurrentVersion(path, item))
     }
