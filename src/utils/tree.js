@@ -1,12 +1,12 @@
 import fs from 'co-fs'
-import { join, sep } from 'path'
+import { join, sep, parse } from 'path'
 
 export default function *tree(path) {
     let output = []
 
     try {
         let config = require(`${path}${sep}package.json`)
-        output.push(`${config.name}@${config.version} ${path}`)
+        output.push(`${config.name || parse(path).base }@${config.version || '0.0.1'} ${path}`)
     }catch(e) {
         output.push(`${path}`)
     }

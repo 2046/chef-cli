@@ -11,10 +11,6 @@ export function *completion(templateName) {
     path = templateName ? `${defs.defaults.pkgPath}${sep}${templateName}` : defs.defaults.pkgPath
 
     if(!(yield isEmpty(path))) {
-        if(!templateName) {
-            txt.push(`${defs.defaults.name}@${defs.defaults.version} ${path}`)
-        }
-
         txt.push(...yield tree(path))
         output(txt)
     }
