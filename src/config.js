@@ -8,6 +8,21 @@ export function *completion(op, key, val) {
         output([vars[key], ''])
     }
 
+    if(op === 'delete' && key) {
+        delete vars[key]
+        yield rc('chef', vars)
+    }
+
+    if(op === 'list') {
+        let list = []
+
+        for(let key of Object.keys(vars)) {
+            list.push(`${key} = ${vars[key]}`)
+        }
+
+        output([...list, ''])
+    }
+
     if(op === 'set' && key && val) {
         if(key === 'registry' && val[val.length - 1] !== '/') {
             val += '/'

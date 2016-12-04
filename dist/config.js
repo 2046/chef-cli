@@ -22,6 +22,21 @@ function* completion(op, key, val) {
         (0, _output2.default)([vars[key], '']);
     }
 
+    if (op === 'delete' && key) {
+        delete vars[key];
+        yield (0, _rc2.default)('chef', vars);
+    }
+
+    if (op === 'list') {
+        let list = [];
+
+        for (let key of Object.keys(vars)) {
+            list.push(`${ key } = ${ vars[key] }`);
+        }
+
+        (0, _output2.default)([...list, '']);
+    }
+
     if (op === 'set' && key && val) {
         if (key === 'registry' && val[val.length - 1] !== '/') {
             val += '/';

@@ -67,6 +67,7 @@ function* completion(templateName) {
 
     if (!templateName) {
         (0, _output2.default)(['ERROR: install operator must be enter template parameters', '']);
+        process.exit(1);
     }
 
     try {
