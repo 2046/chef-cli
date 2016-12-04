@@ -6,7 +6,7 @@ export default function *tree(path) {
 
     try {
         let config = require(`${path}${sep}package.json`)
-        output.push(`${config.name || parse(path).base }@${config.version || '0.0.1'} ${path}`)
+        output.push(`${config.name || parse(path).base }@${config.version || '0.0.0'} ${path}`)
     }catch(e) {
         output.push(`${path}`)
     }
