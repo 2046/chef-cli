@@ -36,7 +36,7 @@ defaults = {
     registry: 'https://github.com/chef-template/'
 }
 
-if(!fs.existsSync(defaults.pkgPath)) {
+if (!fs.existsSync(defaults.pkgPath)) {
     fs.mkdirSync(defaults.pkgPath)
 }
 

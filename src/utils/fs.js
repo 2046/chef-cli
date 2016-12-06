@@ -5,12 +5,12 @@ import extract from 'unzip'
 import { join } from 'path'
 import inquirer from 'inquirer'
 
-export function *exists(path) {
+export function* exists(path) {
     return yield fs.exists(path)
 }
 
-export function *rm(path) {
-    if(!(yield exists(path))) {
+export function* rm(path) {
+    if (!(yield exists(path))) {
         return false
     }
 
@@ -18,8 +18,8 @@ export function *rm(path) {
     return true
 }
 
-export function *mkdir(path) {
-    if(yield exists(path)) {
+export function* mkdir(path) {
+    if (yield exists(path)) {
         return false
     }
 
@@ -27,14 +27,14 @@ export function *mkdir(path) {
     return true
 }
 
-export function *rmdir(path) {
-    if(yield exists(path)) {
-        for(let item of yield fs.readdir(path)) {
+export function* rmdir(path) {
+    if (yield exists(path)) {
+        for (let item of yield fs.readdir(path)) {
             let tmp = join(path, item)
 
-            if((yield fs.lstat(tmp)).isDirectory()) {
+            if ((yield fs.lstat(tmp)).isDirectory()) {
                 yield rmdir(tmp)
-            }else {
+            } else {
                 yield fs.unlink(tmp)
             }
         }
@@ -45,7 +45,7 @@ export function *rmdir(path) {
     return true
 }
 
-export function *unzip(path, dest) {
+export function* unzip(path, dest) {
     return new Promise((resolve, reject) => {
         _fs.createReadStream(path).on('end', () => {
             setTimeout(() => {
@@ -55,10 +55,10 @@ export function *unzip(path, dest) {
     })
 }
 
-export function *cp(path, dest) {
+export function* cp(path, dest) {
     return new Promise((resolve, reject) => {
         ncp.ncp(path, dest, function (err) {
-            if(err) {
+            if (err) {
                 reject(err)
             }
 
@@ -67,16 +67,16 @@ export function *cp(path, dest) {
     })
 }
 
-export function *isEmpty(path) {
-    if(!(yield exists(path))) {
+export function* isEmpty(path) {
+    if (!(yield exists(path))) {
         return true
     }
 
-    if((yield fs.lstat(path)).isDirectory()) {
+    if ((yield fs.lstat(path)).isDirectory()) {
         let result = []
 
-        for(let item of yield fs.readdir(path)) {
-            if(item[0] === '.') {
+        for (let item of yield fs.readdir(path)) {
+            if (item[0] === '.') {
                 continue
             }
 
@@ -84,14 +84,14 @@ export function *isEmpty(path) {
         }
 
         return !result.length
-    }else {
+    } else {
         let data = yield fs.readFile(path)
 
         return !data || !result.length
     }
 }
 
-export function *confirm(message) {
+export function* confirm(message) {
     return new Promise((resolve, reject) => {
         inquirer.prompt([{
             message,

@@ -5,7 +5,7 @@ import config from '../../package'
 let currentNode = process.version.replace(/-.*$/, '')
 
 export function checkEnv() {
-    if(checkVersion()) {
+    if (checkVersion()) {
         output([
             `ERROR: chef-cli is known not to run on Node.js ${currentNode}`,
             `You'll need to upgrade to a newer version in order to use this`,

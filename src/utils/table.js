@@ -1,6 +1,6 @@
 import table from 'text-table'
 
-export default function(data, options) {
+export default function (data, options) {
     options = Object.assign({}, {
         align: [],
         stringLength(s) { return trim(s).length }

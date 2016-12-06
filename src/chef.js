@@ -3,10 +3,10 @@ import defs from './utils/defs'
 import config from '../package'
 import { checkEnv } from './utils/check'
 
-co(function *() {
+co(function* () {
     let args, operator
 
-    if(!checkEnv()) {
+    if (!checkEnv()) {
         process.exit(1)
     }
 
@@ -15,11 +15,11 @@ co(function *() {
     args = process.argv.slice(2)
     operator = args.shift()
 
-    if(defs.alias[operator]) {
+    if (defs.alias[operator]) {
         operator = defs.alias[operator]
     }
 
-    if(!defs.operators[operator]) {
+    if (!defs.operators[operator]) {
         operator = 'help'
     }
 

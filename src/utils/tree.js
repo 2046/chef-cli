@@ -1,13 +1,13 @@
 import fs from 'co-fs'
 import { join, sep, parse } from 'path'
 
-export default function *tree(path) {
+export default function* tree(path) {
     let output = []
 
     try {
         let config = require(`${path}${sep}package.json`)
-        output.push(`${config.name || parse(path).base }@${config.version || '0.0.0'} ${path}`)
-    }catch(e) {
+        output.push(`${config.name || parse(path).base}@${config.version || '0.0.0'} ${path}`)
+    } catch (e) {
         output.push(`${path}`)
     }
 
@@ -16,19 +16,19 @@ export default function *tree(path) {
     return output
 }
 
-function *treeObj(path) {
+function* treeObj(path) {
     let result = {}
 
-    for(let item of yield fs.readdir(path)) {
+    for (let item of yield fs.readdir(path)) {
         let tmp = join(path, item)
 
-        if(item[0] === '.') {
+        if (item[0] === '.') {
             continue
         }
 
-        if((yield fs.lstat(tmp)).isDirectory()) {
+        if ((yield fs.lstat(tmp)).isDirectory()) {
             result[item] = yield treeObj(tmp)
-        }else {
+        } else {
             result[item] = ''
         }
     }
@@ -52,7 +52,7 @@ function growBranch(key, root, last, lastStates, callback) {
     line = ''
     lastStatesCopy = lastStates.slice(0)
 
-    if(lastStatesCopy.push([root, last]) && lastStates.length > 0) {
+    if (lastStatesCopy.push([root, last]) && lastStates.length > 0) {
         lastStates.forEach((lastState, index) => {
             if (index > 0) {
                 line += (lastState[1] ? ' ' : '│') + ' '
@@ -63,7 +63,7 @@ function growBranch(key, root, last, lastStates, callback) {
         callback(line)
     }
 
-    if(typeof root === 'object') {
+    if (typeof root === 'object') {
         keys(root).forEach((item, index, array) => {
             growBranch(item, root[item], ++index === array.length, lastStatesCopy, callback)
         })

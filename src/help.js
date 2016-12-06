@@ -6,7 +6,7 @@ import output from './utils/output'
 
 let commands = [...Object.keys(defs.alias), ...Object.keys(defs.operators)].filter(key => key[0] !== '-')
 
-export function *completion() {
+export function* completion() {
     output([
         '',
         'Usage: chef-cli <command>',
@@ -28,18 +28,18 @@ function wrap(arr) {
     out = ['']
     line = process.stdout.columns
 
-    if(!line) {
+    if (!line) {
         line = 60
-    }else {
+    } else {
         line = Math.min(60, Math.max(line - 16, 24))
     }
 
     arr = arr.sort((a, b) => a < b ? -1 : 1)
 
     arr.forEach((item) => {
-        if(out[l].length + item.length + 2 < line) {
+        if (out[l].length + item.length + 2 < line) {
             out[l] += ', ' + item
-        }else {
+        } else {
             out[l++] += ','
             out[l] = item
         }

@@ -12,19 +12,19 @@ import output from './utils/output'
 import { checkGithubUrl } from './utils/check'
 import { mkdir, exists, unzip, rmdir, rm, cp } from './utils/fs'
 
-export function *completion(templateName) {
+export function* completion(templateName) {
     let path, vars, url, zip
 
     path = `${defs.defaults.pkgPath}${sep}${templateName}`
     vars = Object.assign({}, defs.defaults, (yield rc('chef')).data)
 
-    if(checkGithubUrl(vars.registry)) {
+    if (checkGithubUrl(vars.registry)) {
         url = `${vars.registry}${templateName}/archive/master.zip`
-    }else {
+    } else {
         url = `${vars.registry}${templateName}.zip`
     }
 
-    if(!templateName) {
+    if (!templateName) {
         output(['ERROR: install operator must be enter template parameters', ''])
         process.exit(1)
     }
@@ -33,12 +33,12 @@ export function *completion(templateName) {
         zip = yield download(url)
         yield generate(zip, path)
         output(yield tree(path))
-    }catch(err) {
+    } catch (err) {
         output([err, ''])
     }
 }
 
-function *download(url, again) {
+function* download(url, again) {
     let spinner = ora('Downloading...').start()
 
     return new Promise((resolve, reject) => {
@@ -48,13 +48,13 @@ function *download(url, again) {
             total = parseInt(res.headers['content-length'], 10)
             dest = `${os.tmpdir()}${sep}${Date.now()}${parse(url).ext}`
 
-            if(isNaN(total)){
+            if (isNaN(total)) {
                 spinner.stop()
 
-                if(again) {
+                if (again) {
                     reject('can not find the remote file')
-                }else {
-                    co(function* (){
+                } else {
+                    co(function* () {
                         return yield download(url, true)
                     }).then(resolve, reject)
                 }
@@ -64,16 +64,16 @@ function *download(url, again) {
 
             spinner.stop()
             progress = new Progress('Downloading... [:bar] :percent :etas', {
-                incomplete : ' ',
-                total : total,
+                incomplete: ' ',
+                total: total,
                 clear: true
             })
 
-            res.on('data', function(chunk){
+            res.on('data', function(chunk) {
                 progress.tick(chunk.length)
             }).pipe(fs.createWriteStream(dest))
 
-            res.on('end', function(){
+            res.on('end', function() {
                 progress.tick(progress.total - progress.curr)
                 resolve(dest)
             })
@@ -84,10 +84,10 @@ function *download(url, again) {
     })
 }
 
-function *generate(zip, dest) {
+function* generate(zip, dest) {
     let src, info
 
-    if(!(yield exists(dest))) {
+    if (!(yield exists(dest))) {
         yield mkdir(dest)
     }
 

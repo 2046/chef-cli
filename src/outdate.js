@@ -11,7 +11,7 @@ import { checkGithubUrl } from './utils/check'
 
 const spinner = ora('parseing...')
 
-export function *completion() {
+export function* completion() {
     let vars, vers, currentVers, latestVers, baseUrl
 
     spinner.start()
@@ -19,18 +19,18 @@ export function *completion() {
     currentVers = []
     vars = Object.assign({}, defs.defaults, (yield rc('chef')).data)
 
-    if(yield isEmpty(defs.defaults.pkgPath)) {
+    if (yield isEmpty(defs.defaults.pkgPath)) {
         spinner.stop()
         process.exit(1)
     }
 
-    if(checkGithubUrl(vars.registry)) {
+    if (checkGithubUrl(vars.registry)) {
         baseUrl = `https://raw.githubusercontent.com/${parse(vars.registry).base}/`
-    }else {
+    } else {
         baseUrl = `${vars.registry}`
     }
 
-    for(let item of yield fs.readdir(defs.defaults.pkgPath)) {
+    for (let item of yield fs.readdir(defs.defaults.pkgPath)) {
         let path, url
 
         path = `${defs.defaults.pkgPath}${sep}${item}${sep}package.json`
@@ -45,19 +45,19 @@ export function *completion() {
     spinner.stop()
     output([table(
         [['template', 'Current', 'Latest'], ...vers],
-        { align: ['l', 'r', 'r']}
+        { align: ['l', 'r', 'r'] }
     ), ''])
 }
 
-function *getCurrentVersion(path, name) {
-    if(yield exists(path)) {
+function* getCurrentVersion(path, name) {
+    if (yield exists(path)) {
         return { name, version: JSON.parse(yield fs.readFile(path)).version }
     }
 
     return { name, version: '0.0.0' }
 }
 
-function *getLatestVersion(url, name) {
+function* getLatestVersion(url, name) {
     return new Promise((resolve, reject) => {
         spinner.text = `parseing ${name} template`
 
@@ -67,16 +67,16 @@ function *getLatestVersion(url, name) {
             data = ''
             total = parseInt(res.headers['content-length'], 10)
 
-            if(isNaN(total) || res.statusCode === 404){
+            if (isNaN(total) || res.statusCode === 404) {
                 resolve({ name, version: '0.0.0' })
                 return
             }
 
-            res.on('data', function(chunk){
+            res.on('data', function (chunk) {
                 data += chunk
             })
 
-            res.on('end', function(){
+            res.on('end', function () {
                 resolve({ name, version: JSON.parse(data).version })
             })
         }).on('error', (err) => {

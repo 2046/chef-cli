@@ -4,14 +4,14 @@ import defs from './defs'
 import { sep } from 'path'
 import { exists } from './fs'
 
-export default function *rc (name, data) {
+export default function* rc(name, data) {
     let path = `${defs.defaults.homePath}${sep}.${name}rc`
 
-    if(!(yield exists(path))) {
+    if (!(yield exists(path))) {
         yield fs.writeFile(path, '', 'utf8')
     }
 
-    if(data) {
+    if (data) {
         yield fs.writeFile(path, serialize(data), 'utf8')
     }
 

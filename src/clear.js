@@ -3,8 +3,8 @@ import { sep } from 'path'
 import defs from './utils/defs'
 import { rmdir } from './utils/fs'
 
-export function *completion(template, dest) {
-    for(let item of yield fs.readdir(defs.defaults.pkgPath)) {
+export function* completion(template, dest) {
+    for (let item of yield fs.readdir(defs.defaults.pkgPath)) {
         yield rmdir(`${defs.defaults.pkgPath}${sep}${item}`)
     }
 }
