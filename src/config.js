@@ -24,6 +24,11 @@ export function* completion(op, key, val) {
     }
 
     if (op === 'set' && key && val) {
+        if (/^https?:\/\//.test(val)) {
+            output([`Must be a full url with 'http://'`, ''])
+            return
+        }
+
         if (key === 'registry' && val[val.length - 1] !== '/') {
             val += '/'
         }
