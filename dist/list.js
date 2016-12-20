@@ -27,6 +27,6 @@ function* completion(templateName) {
     let path = templateName ? `${ _defs2.default.defaults.pkgPath }${ _path.sep }${ templateName }` : _defs2.default.defaults.pkgPath;
 
     if (!(yield (0, _fs.isEmpty)(path))) {
-        (0, _output2.default)(...(yield (0, _tree2.default)(path)));
+        (0, _output2.default)((yield (0, _tree2.default)(path)));
     }
 }

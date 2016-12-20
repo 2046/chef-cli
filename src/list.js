@@ -8,6 +8,6 @@ export function* completion(templateName) {
     let path = templateName ? `${defs.defaults.pkgPath}${sep}${templateName}` : defs.defaults.pkgPath
 
     if (!(yield isEmpty(path))) {
-        output(...yield tree(path))
+        output(yield tree(path))
     }
 }
