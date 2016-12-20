@@ -5,13 +5,9 @@ import output from './utils/output'
 import { isEmpty } from './utils/fs'
 
 export function* completion(templateName) {
-    let path, txt
-
-    txt = []
-    path = templateName ? `${defs.defaults.pkgPath}${sep}${templateName}` : defs.defaults.pkgPath
+    let path = templateName ? `${defs.defaults.pkgPath}${sep}${templateName}` : defs.defaults.pkgPath
 
     if (!(yield isEmpty(path))) {
-        txt.push(...yield tree(path))
-        output(txt)
+        output(...yield tree(path))
     }
 }
