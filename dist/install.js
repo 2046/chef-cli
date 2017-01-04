@@ -128,14 +128,15 @@ function* download(url, again) {
 function* generate(zip, dest) {
     let src, info;
 
-    if (!(yield (0, _fs3.exists)(dest))) {
-        yield (0, _fs3.mkdir)(dest);
+    if (yield (0, _fs3.exists)(dest)) {
+        yield (0, _fs3.rmdir)(dest);
     }
 
     info = (0, _path.parse)(zip);
     src = yield (0, _fs3.unzip)(zip, `${ info.dir }${ _path.sep }${ info.name }`);
     src = `${ src }${ _path.sep }${ (0, _path.parse)(dest).base }-master`;
 
+    yield (0, _fs3.mkdir)(dest);
     yield (0, _fs3.cp)(src, dest);
     yield (0, _fs3.rmdir)(src);
     yield (0, _fs3.rm)(zip);
