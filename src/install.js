@@ -87,14 +87,15 @@ function* download(url, again) {
 function* generate(zip, dest) {
     let src, info
 
-    if (!(yield exists(dest))) {
-        yield mkdir(dest)
+    if (yield exists(dest)) {
+        yield rmdir(dest)
     }
-
+    
     info = parse(zip)
     src = yield unzip(zip, `${info.dir}${sep}${info.name}`)
     src = `${src}${sep}${parse(dest).base}-master`
 
+    yield mkdir(dest)
     yield cp(src, dest)
     yield rmdir(src)
     yield rm(zip)
