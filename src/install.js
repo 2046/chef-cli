@@ -10,8 +10,10 @@ import Progress from 'progress'
 import tree from './utils/tree'
 import { parse, sep } from 'path'
 import output from './utils/output'
+import tag from './utils/tag'
 import { checkGithubUrl } from './utils/check'
 import { mkdir, exists, unzip, rmdir, rm, cp } from './utils/fs'
+
 
 const NOT_FIND_FILE = 'can not find the remote file'
 
@@ -30,7 +32,7 @@ export function* completion(templateName) {
         [templateName, version] = templateName.split(vars.versionSep)
         version = version || 'latest'
         
-        url = yield getZipUrl(vars, templateName, version)
+        url = (yield tag(vars, templateName, version)).zipUrl
         zip = yield download(url)
         yield generate(zip, path)
         output(yield tree(path))
@@ -102,59 +104,4 @@ function* generate(zip, dest) {
     yield rm(zip)
 
     return dest
-}
-
-function* getZipUrl(vars, templateName, version = 'latest') {
-    var tags, tag, owner, url, gitDownloadUrl
-
-    owner = vars.registry.split('/').slice(-2, -1)[0]
-    tags = yield get(`https://api.github.com/repos/${owner}/${templateName}/tags`)
-    tag = getTag(tags, version)
-    
-    if (tag.zipball_url) {
-        return `${vars.gitFile}${owner}/${templateName}/legacy.zip/${tag.name}`
-    } else {
-        return Promise.reject(NOT_FIND_FILE)
-    }
-
-}
-
-function getTag(tags, v) {
-    let tag
-
-    if (v === 'latest') {
-        return tags[0]
-    }
-    for (let i = 0, len = tags.length; i < len; i++) {
-        tag = tags[i]
-        if (tag.name == v) {
-            return tag
-        }
-    }
-    return {}
-}
-
-function* get(url) {
-    return new Promise((resolve, reject) => {
-        request({
-            method: 'GET',
-            json: true,
-            url: url,
-            headers: {
-                'User-Agent': 'chef-cli'
-            }
-        }, (err, response, body) => {
-            if (err) {
-                reject(NOT_FIND_FILE)
-
-                return
-            } else {
-                if (response.statusCode == 200) {
-                    resolve(body)
-                } else {
-                    reject(NOT_FIND_FILE)
-                }
-            }
-        })
-    })
 }
