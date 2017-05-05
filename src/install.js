@@ -102,13 +102,13 @@ function* generate(zip, dest) {
 }
 
 function* getDownloadUrl(vars, repo, version = 'latest') {
-    var tags, tag, owner, url
+    var tags, tag, owner
 
     owner = vars.registry.split('/').slice(-2, -1)[0]
     tags = yield get(`https://api.github.com/repos/${owner}/${repo}/tags`)
     tag = getTag(tags, version)
 
-    tag ? `${vars.gitFile}${owner}/${repo}/legacy.zip/${tag.name}` : ''
+    return tag ? `${vars.gitFile}${owner}/${repo}/legacy.zip/${tag.name}` : ''
 }
 
 function getTag(tags, version) {
