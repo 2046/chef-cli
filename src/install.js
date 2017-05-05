@@ -1,5 +1,4 @@
 import fs from 'fs'
-import { readdir } from 'co-fs'
 import os from 'os'
 import co from 'co'
 import ora from 'ora'
@@ -8,6 +7,7 @@ import request from 'request'
 import defs from './utils/defs'
 import Progress from 'progress'
 import tree from './utils/tree'
+import { readdir } from 'co-fs'
 import { parse, sep } from 'path'
 import output from './utils/output'
 import { checkGithubUrl } from './utils/check'
@@ -16,7 +16,7 @@ import { mkdir, exists, unzip, rmdir, rm, cp } from './utils/fs'
 const NOT_FIND_FILE = 'can not find the remote file'
 
 export function* completion(templateName) {
-    let path, vars, url, zip, owner, version
+    let path, vars, url, zip, version
 
     if (!templateName) {
         output(['ERROR: install operator must be enter template parameters', ''])
@@ -27,10 +27,7 @@ export function* completion(templateName) {
     vars = Object.assign({}, defs.defaults, (yield rc('chef')).data)
 
     try {
-        [templateName, version] = templateName.split(vars.versionSep)
-        version = version || 'latest'
-        
-        url = yield getZipUrl(vars, templateName, version)
+        url = yield getDownloadUrl(vars, ...templateName.split('@'))
         zip = yield download(url)
         yield generate(zip, path)
         output(yield tree(path))
@@ -104,57 +101,43 @@ function* generate(zip, dest) {
     return dest
 }
 
-function* getZipUrl(vars, templateName, version = 'latest') {
-    var tags, tag, owner, url, gitDownloadUrl
+function* getDownloadUrl(vars, repo, version = 'latest') {
+    var tags, tag, owner, url
 
     owner = vars.registry.split('/').slice(-2, -1)[0]
-    tags = yield get(`https://api.github.com/repos/${owner}/${templateName}/tags`)
+    tags = yield get(`https://api.github.com/repos/${owner}/${repo}/tags`)
     tag = getTag(tags, version)
-    
-    if (tag.zipball_url) {
-        return `${vars.gitFile}${owner}/${templateName}/legacy.zip/${tag.name}`
-    } else {
-        return Promise.reject(NOT_FIND_FILE)
-    }
 
+    tag ? `${vars.gitFile}${owner}/${repo}/legacy.zip/${tag.name}` : ''
 }
 
-function getTag(tags, v) {
-    let tag
-
-    if (v === 'latest') {
+function getTag(tags, version) {
+    if (version === 'latest') {
         return tags[0]
     }
-    for (let i = 0, len = tags.length; i < len; i++) {
-        tag = tags[i]
-        if (tag.name == v) {
+
+    for (let tag of tags) {
+        if (tag.name == version) {
             return tag
         }
     }
-    return {}
+
+    return null
 }
 
 function* get(url) {
     return new Promise((resolve, reject) => {
-        request({
-            method: 'GET',
+        let options = {
             json: true,
-            url: url,
-            headers: {
-                'User-Agent': 'chef-cli'
-            }
-        }, (err, response, body) => {
+            headers: { 'User-Agent': 'chef-cli' }
+        }
+        
+        request.get(url, options, (err, response, body) => {
             if (err) {
-                reject(NOT_FIND_FILE)
-
-                return
-            } else {
-                if (response.statusCode == 200) {
-                    resolve(body)
-                } else {
-                    reject(NOT_FIND_FILE)
-                }
+                return reject(NOT_FIND_FILE)
             }
+            
+            response.statusCode === 200 ? resolve(body) : reject(NOT_FIND_FILE)
         })
     })
 }

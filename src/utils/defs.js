@@ -33,7 +33,6 @@ defaults = {
     name: config.name,
     version: config.version,
     pkgPath: `${home}${sep}.chef`,
-    versionSep: '@',
     gitFile: 'https://codeload.github.com/',
     registry: 'https://github.com/chef-template/'
 }
