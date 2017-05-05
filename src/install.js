@@ -1,4 +1,5 @@
 import fs from 'fs'
+import { readdir } from 'co-fs'
 import os from 'os'
 import co from 'co'
 import ora from 'ora'
@@ -12,24 +13,24 @@ import output from './utils/output'
 import { checkGithubUrl } from './utils/check'
 import { mkdir, exists, unzip, rmdir, rm, cp } from './utils/fs'
 
+const NOT_FIND_FILE = 'can not find the remote file'
+
 export function* completion(templateName) {
-    let path, vars, url, zip
-
-    path = `${defs.defaults.pkgPath}${sep}${templateName}`
-    vars = Object.assign({}, defs.defaults, (yield rc('chef')).data)
-
-    if (checkGithubUrl(vars.registry)) {
-        url = `${vars.registry}${templateName}/archive/master.zip`
-    } else {
-        url = `${vars.registry}${templateName}.zip`
-    }
+    let path, vars, url, zip, owner, version
 
     if (!templateName) {
         output(['ERROR: install operator must be enter template parameters', ''])
         process.exit(1)
     }
 
+    path = `${defs.defaults.pkgPath}${sep}${templateName}`
+    vars = Object.assign({}, defs.defaults, (yield rc('chef')).data)
+
     try {
+        [templateName, version] = templateName.split(vars.versionSep)
+        version = version || 'latest'
+        
+        url = yield getZipUrl(vars, templateName, version)
         zip = yield download(url)
         yield generate(zip, path)
         output(yield tree(path))
@@ -52,7 +53,7 @@ function* download(url, again) {
                 spinner.stop()
 
                 if (again) {
-                    reject('can not find the remote file')
+                    reject(NOT_FIND_FILE)
                 } else {
                     co(function* () {
                         return yield download(url, true)
@@ -69,11 +70,11 @@ function* download(url, again) {
                 clear: true
             })
 
-            res.on('data', function(chunk) {
+            res.on('data', function (chunk) {
                 progress.tick(chunk.length)
             }).pipe(fs.createWriteStream(dest))
 
-            res.on('end', function() {
+            res.on('end', function () {
                 progress.tick(progress.total - progress.curr)
                 resolve(dest)
             })
@@ -90,10 +91,10 @@ function* generate(zip, dest) {
     if (yield exists(dest)) {
         yield rmdir(dest)
     }
-    
+
     info = parse(zip)
     src = yield unzip(zip, `${info.dir}${sep}${info.name}`)
-    src = `${src}${sep}${parse(dest).base}-master`
+    src += `${sep}${(yield readdir(src))[0]}`
 
     yield mkdir(dest)
     yield cp(src, dest)
@@ -101,4 +102,59 @@ function* generate(zip, dest) {
     yield rm(zip)
 
     return dest
+}
+
+function* getZipUrl(vars, templateName, version = 'latest') {
+    var tags, tag, owner, url, gitDownloadUrl
+
+    owner = vars.registry.split('/').slice(-2, -1)[0]
+    tags = yield get(`https://api.github.com/repos/${owner}/${templateName}/tags`)
+    tag = getTag(tags, version)
+    
+    if (tag.zipball_url) {
+        return `${vars.gitFile}${owner}/${templateName}/legacy.zip/${tag.name}`
+    } else {
+        return Promise.reject(NOT_FIND_FILE)
+    }
+
+}
+
+function getTag(tags, v) {
+    let tag
+
+    if (v === 'latest') {
+        return tags[0]
+    }
+    for (let i = 0, len = tags.length; i < len; i++) {
+        tag = tags[i]
+        if (tag.name == v) {
+            return tag
+        }
+    }
+    return {}
+}
+
+function* get(url) {
+    return new Promise((resolve, reject) => {
+        request({
+            method: 'GET',
+            json: true,
+            url: url,
+            headers: {
+                'User-Agent': 'chef-cli'
+            }
+        }, (err, response, body) => {
+            if (err) {
+                reject(NOT_FIND_FILE)
+
+                return
+            } else {
+                if (response.statusCode == 200) {
+                    resolve(body)
+                } else {
+                    reject(NOT_FIND_FILE)
+                }
+            }
+        })
+    })
 }

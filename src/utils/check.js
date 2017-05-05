@@ -23,6 +23,6 @@ export function checkGithubUrl(url) {
     return url.indexOf('github.com') !== -1
 }
 
-function checkVersion(version) {
+function checkVersion() {
     return !semver.satisfies(currentNode, config.engines.node)
 }
