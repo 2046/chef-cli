@@ -71,6 +71,10 @@ export function* cp(path, dest) {
     })
 }
 
+export function* readFile(path){
+    return yield fs.readFile(path)
+}
+
 export function* isEmpty(path) {
     if (!(yield exists(path))) {
         return true
@@ -89,7 +93,7 @@ export function* isEmpty(path) {
 
         return !result.length
     } else {
-        let data = yield fs.readFile(path)
+        let data = yield readFile(path)
 
         return !data || !result.length
     }

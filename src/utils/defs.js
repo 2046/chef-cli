@@ -29,7 +29,8 @@ operators = {
     'version': './version',
     'install': './install',
     'outdate': './outdate',
-    'uninstall': './uninstall'
+    'uninstall': './uninstall',
+    'update': './update'
 }
 
 defaults = {

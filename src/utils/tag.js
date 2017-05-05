@@ -1,10 +1,11 @@
-import { parse } from 'path'
+import { parse, sep } from 'path'
+import { exists, readFile } from './fs'
 import request from 'request'
 import defs from './defs'
 
-export default function* tag(vars, repo, version) {
+export function* getRemoteTag(vars, repo, version) {
     var tags, tag, owner, url, gitDownloadUrl
-    
+
     version = version || 'latest'
     owner = parse(vars.registry).base
     tags = yield get(`https://api.github.com/repos/${owner}/${repo}/tags`)
@@ -14,6 +15,7 @@ export default function* tag(vars, repo, version) {
         ? Object.assign(tag, { zipUrl: `${vars.gitFile}${owner}/${repo}/legacy.zip/${tag.name}` })
         : {}
 }
+
 
 function getTag(tags, v) {
     let tag
@@ -48,4 +50,19 @@ function* get(url) {
             }
         })
     })
+}
+
+
+export function* getLocal(vars, name) {
+    let path = `${vars.pkgPath}${sep}${name}${sep}package.json`
+    if (yield exists(path)) {
+        return { name, version: JSON.parse(yield readFile(path)).version }
+    }
+
+    return { name, version: '0.0.0' }
+}
+
+export function* getLatest(vars, name) {
+    let tagInfo = yield getRemoteTag(vars, name)
+    return tagInfo.zipUrl ? { name, version: tagInfo.name, zipUrl: tagInfo.zipUrl } : { name, version: '0.0.0' }
 }
