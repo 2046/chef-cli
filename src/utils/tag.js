@@ -1,22 +1,18 @@
 import { parse } from 'path'
 import request from 'request'
+import defs from './defs'
 
-export default function* tag(vars, templateName, version = 'latest') {
+export default function* tag(vars, repo, version) {
     var tags, tag, owner, url, gitDownloadUrl
-
+    
+    version = version || 'latest'
     owner = parse(vars.registry).base
-    tags = yield get(`https://api.github.com/repos/${owner}/${templateName}/tags`)
+    tags = yield get(`https://api.github.com/repos/${owner}/${repo}/tags`)
     tag = getTag(tags, version)
 
-    if (tag.zipball_url) {
-        return Object.assign(
-            tag,
-            { zipUrl: `${vars.gitFile}${owner}/${templateName}/legacy.zip/${tag.name}` }
-        )
-    } else {
-        return Promise.reject('can not find the remote file')
-    }
-
+    return tag.zipball_url
+        ? Object.assign(tag, { zipUrl: `${vars.gitFile}${owner}/${repo}/legacy.zip/${tag.name}` })
+        : {}
 }
 
 function getTag(tags, v) {
@@ -45,15 +41,10 @@ function* get(url) {
             }
         }, (err, response, body) => {
             if (err) {
-                reject(NOT_FIND_FILE)
-
+                reject(defs.errors.noFile)
                 return
             } else {
-                if (response.statusCode == 200) {
-                    resolve(body)
-                } else {
-                    reject(NOT_FIND_FILE)
-                }
+                response.statusCode == 200 ? resolve(body) : reject(defs.errors.noFile)
             }
         })
     })

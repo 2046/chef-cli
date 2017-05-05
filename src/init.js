@@ -7,7 +7,6 @@ export function* completion(template, dest = '.') {
     let path
 
     dest = resolve(join(process.cwd(), dest))
-    [template] = template.split(defs.versionSep)
     path = `${defs.defaults.pkgPath}${sep}${template}`
 
     if (!(yield exists(path))) {
