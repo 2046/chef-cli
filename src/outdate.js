@@ -6,6 +6,7 @@ import defs from './utils/defs'
 import table from './utils/table'
 import { parse, sep } from 'path'
 import output from './utils/output'
+import tag from './utils/tag'
 import { exists, isEmpty } from './utils/fs'
 import { checkGithubUrl } from './utils/check'
 
@@ -35,7 +36,7 @@ export function* completion() {
 
         path = `${defs.defaults.pkgPath}${sep}${item}${sep}package.json`
         url = checkGithubUrl(vars.registry) ? `${baseUrl}${item}/master/package.json` : `${baseUrl}${item}/package.json`
-        latestVers.push(yield getLatestVersion(`${url}?t=${Date.now()}`, item))
+        latestVers.push(yield getLatestVersion(vars, item))
         currentVers.push(yield getCurrentVersion(path, item))
     }
 
@@ -57,30 +58,9 @@ function* getCurrentVersion(path, name) {
     return { name, version: '0.0.0' }
 }
 
-function* getLatestVersion(url, name) {
-    return new Promise((resolve, reject) => {
-        spinner.text = `parseing ${name} template`
+function* getLatestVersion(vars, name) {
+    spinner.text = `parseing ${name} template`
 
-        request(url).on('response', (res) => {
-            let data, total
-
-            data = ''
-            total = parseInt(res.headers['content-length'], 10)
-
-            if (isNaN(total) || res.statusCode === 404) {
-                resolve({ name, version: '0.0.0' })
-                return
-            }
-
-            res.on('data', function (chunk) {
-                data += chunk
-            })
-
-            res.on('end', function () {
-                resolve({ name, version: JSON.parse(data).version })
-            })
-        }).on('error', (err) => {
-            resolve({ name, version: '0.0.0' })
-        })
-    })
+    let tagInfo = yield tag(vars, name)
+    return tagInfo.zipUrl ? { name, version: tagInfo.name } : { name, version: '0.0.0' }
 }
