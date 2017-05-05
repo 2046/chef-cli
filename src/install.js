@@ -133,11 +133,11 @@ function* get(url) {
         }
         
         request.get(url, options, (err, response, body) => {
-            if (err) {
-                return reject(NOT_FIND_FILE)
+            if (response.statusCode === 200) {
+                return resolve(body)
             }
-            
-            response.statusCode === 200 ? resolve(body) : reject(NOT_FIND_FILE)
+
+            reject(NOT_FIND_FILE)
         })
     })
 }
