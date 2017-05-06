@@ -1,11 +1,11 @@
 import co from 'co'
 import fs from 'fs'
 import os from 'os'
-import request from 'request'
 import ora from 'ora'
-import { sep, parse } from 'path'
-import Progress from 'progress'
 import defs from './defs'
+import request from 'request'
+import Progress from 'progress'
+import { sep, parse } from 'path'
 
 export default function* download(url, again) {
     return new Promise((resolve, reject) => {

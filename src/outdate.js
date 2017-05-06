@@ -5,9 +5,9 @@ import defs from './utils/defs'
 import table from './utils/table'
 import { parse, sep } from 'path'
 import output from './utils/output'
+import { checkGithubUrl } from './utils/check'
 import { getLatest, getLocal } from './utils/tag'
 import { exists, isEmpty, readdir } from './utils/fs'
-import { checkGithubUrl } from './utils/check'
 
 const spinner = ora('parsing...')
 

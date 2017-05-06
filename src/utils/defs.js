@@ -26,11 +26,11 @@ operators = {
     'help': './help',
     'clear': './clear',
     'config': './config',
+    'update': './update',
     'version': './version',
     'install': './install',
     'outdate': './outdate',
-    'uninstall': './uninstall',
-    'update': './update'
+    'uninstall': './uninstall'
 }
 
 defaults = {
@@ -48,7 +48,7 @@ if (!fs.existsSync(defaults.pkgPath)) {
 
 export default {
     alias,
+    errors,
     defaults,
-    operators,
-    errors
+    operators
 }
