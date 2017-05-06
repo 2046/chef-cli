@@ -27,9 +27,13 @@ export function* mkdir(path) {
     return true
 }
 
+export function *readdir(path) {
+    return yield fs.readdir(path)
+}
+
 export function* rmdir(path) {
     if (yield exists(path)) {
-        for (let item of yield fs.readdir(path)) {
+        for (let item of yield readdir(path)) {
             let tmp = join(path, item)
 
             if ((yield fs.lstat(tmp)).isDirectory()) {
@@ -67,6 +71,10 @@ export function* cp(path, dest) {
     })
 }
 
+export function* readFile(path){
+    return yield fs.readFile(path)
+}
+
 export function* isEmpty(path) {
     if (!(yield exists(path))) {
         return true
@@ -75,7 +83,7 @@ export function* isEmpty(path) {
     if ((yield fs.lstat(path)).isDirectory()) {
         let result = []
 
-        for (let item of yield fs.readdir(path)) {
+        for (let item of yield readdir(path)) {
             if (item[0] === '.') {
                 continue
             }
@@ -85,7 +93,7 @@ export function* isEmpty(path) {
 
         return !result.length
     } else {
-        let data = yield fs.readFile(path)
+        let data = yield readFile(path)
 
         return !data || !result.length
     }

@@ -2,10 +2,14 @@ import fs from 'fs'
 import { sep } from 'path'
 import config from '../../package'
 
-let alias, operators, defaults, win, home
+let alias, operators, defaults, win, home, errors
 
 win = process.platform === 'win32'
 home = win ? process.env.USERPROFILE : process.env.HOME
+
+errors = {
+    noFile: 'can not find the remote file'
+}
 
 alias = {
     'h': 'help',
@@ -25,7 +29,8 @@ operators = {
     'version': './version',
     'install': './install',
     'outdate': './outdate',
-    'uninstall': './uninstall'
+    'uninstall': './uninstall',
+    'update': './update'
 }
 
 defaults = {
@@ -44,5 +49,6 @@ if (!fs.existsSync(defaults.pkgPath)) {
 export default {
     alias,
     defaults,
-    operators
+    operators,
+    errors
 }

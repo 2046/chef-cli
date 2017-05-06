@@ -1,32 +1,39 @@
 import rc from './utils/rc'
 import request from 'request'
+import ora from 'ora'
 import defs from './utils/defs'
 import tree from './utils/tree'
-import { getRemoteTag } from './utils/tag'
+import { getLatest, getLocal } from './utils/tag'
 import { sep } from 'path'
 import output from './utils/output'
 import download from './utils/download'
 import generate from './utils/generate'
 
+
 export function* completion(repo) {
-    let path, vars, zipUrl, zip, version
+    let vars, currentVer, latestVer, spinner, path, zip
 
     if (!repo) {
-        output(['ERROR: install operator must be enter template parameters', ''])
+        output(['ERROR: update repo must be enter template parameters', ''])
         process.exit(1)
     }
-
-    repo = repo.split('@')
-    version = repo[1]
-    repo = repo[0]
+    
+    
     vars = Object.assign({}, defs.defaults, (yield rc('chef')).data)
     path = `${defs.defaults.pkgPath}${sep}${repo}`
-    
+
+    currentVer = yield getLocal(vars, repo)
+    if(currentVer.version == '0.0.0') return
+        
     try {
-        zipUrl = (yield getRemoteTag(vars, repo, version)).zipUrl
-        zip = yield download(zipUrl)
+        latestVer = yield getLatest(vars, repo)
+        if(latestVer.version == currentVer.version) return 
+        
+        spinner = ora('updating...')
+        zip = yield download(latestVer.zipUrl)
         yield generate(zip, path)
         output(yield tree(path))
+        spinner.stop()
     } catch (err) {
         output([err, ''])
     }
