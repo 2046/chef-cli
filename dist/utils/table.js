@@ -24,7 +24,7 @@ var _textTable2 = _interopRequireDefault(_textTable);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function underline(s) {
-    return `\u001b[4m${ s }\u001b[24m`;
+    return `\u001b[4m${s}\u001b[24m`;
 }
 
 function trim(str) {

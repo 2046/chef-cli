@@ -19,8 +19,8 @@ var _fs = require('./utils/fs');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function* completion(template, dest) {
+function* completion() {
     for (let item of yield _coFs2.default.readdir(_defs2.default.defaults.pkgPath)) {
-        yield (0, _fs.rmdir)(`${ _defs2.default.defaults.pkgPath }${ _path.sep }${ item }`);
+        yield (0, _fs.rmdir)(`${_defs2.default.defaults.pkgPath}${_path.sep}${item}`);
     }
 }

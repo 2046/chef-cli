@@ -20,5 +20,5 @@ var _fs = require('./utils/fs');
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function* completion(templateName) {
-    yield (0, _fs.rmdir)(`${ _defs2.default.defaults.pkgPath }${ _path.sep }${ templateName }`);
+    yield (0, _fs.rmdir)(`${_defs2.default.defaults.pkgPath}${_path.sep}${templateName}`);
 }

@@ -17,10 +17,10 @@ function* tree(path) {
     let output = [];
 
     try {
-        let config = require(`${ path }${ _path.sep }package.json`);
-        output.push(`${ config.name || (0, _path.parse)(path).base }@${ config.version || '0.0.0' } ${ path }`);
+        let config = require(`${path}${_path.sep}package.json`);
+        output.push(`${config.name || (0, _path.parse)(path).base}@${config.version || '0.0.0'} ${path}`);
     } catch (e) {
-        output.push(`${ path }`);
+        output.push(`${path}`);
     }
 
     output.push(treeify((yield treeObj(path))));
@@ -52,7 +52,7 @@ function treeify(obj) {
     let tree = '';
 
     growBranch('.', obj, false, [], line => {
-        tree += `${ line }\n`;
+        tree += `${line}\n`;
     });
 
     return tree;

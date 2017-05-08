@@ -24,7 +24,7 @@ var _fs = require('./fs');
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function* rc(name, data) {
-    let path = `${ _defs2.default.defaults.homePath }${ _path.sep }.${ name }rc`;
+    let path = `${_defs2.default.defaults.homePath}${_path.sep}.${name}rc`;
 
     if (!(yield (0, _fs.exists)(path))) {
         yield _coFs2.default.writeFile(path, '', 'utf8');

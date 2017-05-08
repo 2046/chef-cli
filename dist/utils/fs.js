@@ -6,9 +6,11 @@ Object.defineProperty(exports, "__esModule", {
 exports.exists = exists;
 exports.rm = rm;
 exports.mkdir = mkdir;
+exports.readdir = readdir;
 exports.rmdir = rmdir;
 exports.unzip = unzip;
 exports.cp = cp;
+exports.readFile = readFile;
 exports.isEmpty = isEmpty;
 exports.confirm = confirm;
 
@@ -58,9 +60,13 @@ function* mkdir(path) {
     return true;
 }
 
+function* readdir(path) {
+    return yield _coFs2.default.readdir(path);
+}
+
 function* rmdir(path) {
     if (yield exists(path)) {
-        for (let item of yield _coFs2.default.readdir(path)) {
+        for (let item of yield readdir(path)) {
             let tmp = (0, _path.join)(path, item);
 
             if ((yield _coFs2.default.lstat(tmp)).isDirectory()) {
@@ -98,6 +104,10 @@ function* cp(path, dest) {
     });
 }
 
+function* readFile(path) {
+    return yield _coFs2.default.readFile(path);
+}
+
 function* isEmpty(path) {
     if (!(yield exists(path))) {
         return true;
@@ -106,7 +116,7 @@ function* isEmpty(path) {
     if ((yield _coFs2.default.lstat(path)).isDirectory()) {
         let result = [];
 
-        for (let item of yield _coFs2.default.readdir(path)) {
+        for (let item of yield readdir(path)) {
             if (item[0] === '.') {
                 continue;
             }
@@ -116,7 +126,7 @@ function* isEmpty(path) {
 
         return !result.length;
     } else {
-        let data = yield _coFs2.default.readFile(path);
+        let data = yield readFile(path);
 
         return !data || !result.length;
     }

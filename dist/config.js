@@ -31,7 +31,7 @@ function* completion(op, key, val) {
         let list = [];
 
         for (let key of Object.keys(vars)) {
-            list.push(`${ key } = ${ vars[key] }`);
+            list.push(`${key} = ${vars[key]}`);
         }
 
         (0, _output2.default)([...list, '']);

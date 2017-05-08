@@ -28,7 +28,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 let commands = [...Object.keys(_defs2.default.alias), ...Object.keys(_defs2.default.operators)].filter(key => key[0] !== '-');
 
 function* completion() {
-    (0, _output2.default)(['', 'Usage: chef-cli <command>', '', 'where <command> is one of:', `    ${ wrap(commands) }`, '', 'Specify configs in the ini-formatted file:', `    ${ (yield (0, _rc2.default)('chef')).path }`, '', `chef-cli@${ _package2.default.version } ${ (0, _path.dirname)(__dirname) }`]);
+    (0, _output2.default)(['', 'Usage: chef-cli <command>', '', 'where <command> is one of:', `    ${wrap(commands)}`, '', 'Specify configs in the ini-formatted file:', `    ${(yield (0, _rc2.default)('chef')).path}`, '', `chef-cli@${_package2.default.version} ${(0, _path.dirname)(__dirname)}`]);
 }
 
 function wrap(arr) {

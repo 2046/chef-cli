@@ -24,7 +24,7 @@ let currentNode = process.version.replace(/-.*$/, '');
 
 function checkEnv() {
     if (checkVersion()) {
-        (0, _output2.default)([`ERROR: chef-cli is known not to run on Node.js ${ currentNode }`, `You'll need to upgrade to a newer version in order to use this`, 'version of npm. You can find the latest version at https://nodejs.org/', '']);
+        (0, _output2.default)([`ERROR: chef-cli is known not to run on Node.js ${currentNode}`, `You'll need to upgrade to a newer version in order to use this`, 'version of npm. You can find the latest version at https://nodejs.org/', '']);
 
         return false;
     }
@@ -36,6 +36,6 @@ function checkGithubUrl(url) {
     return url.indexOf('github.com') !== -1;
 }
 
-function checkVersion(version) {
+function checkVersion() {
     return !_semver2.default.satisfies(currentNode, _package2.default.engines.node);
 }
