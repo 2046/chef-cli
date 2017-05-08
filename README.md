@@ -23,13 +23,13 @@ The chef cli default registry is [chef-template](https://github.com/chef-templat
 - set registry
 
 ```bash
-chef config  set registry https://github.com/{owner}/ 
+chef config set registry https://github.com/{owner}/ 
 ```
 
 - get registry
 
 ```bash
-chef config  get registry
+chef config get registry
 ```
 
 - delete registry
@@ -37,7 +37,7 @@ chef config  get registry
 When delete the config registry, the default registry is [chef-template](https://github.com/chef-template)
 
 ```bash
-chef config  delete registry
+chef config delete registry
 ```
 
 ## install project template
