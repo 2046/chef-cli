@@ -20,13 +20,12 @@ var _fs = require('./utils/fs');
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function* completion(template, dest = '.') {
-    let path;
+    let path = `${_defs2.default.defaults.pkgPath}${_path.sep}${template}`;
 
     dest = (0, _path.resolve)((0, _path.join)(process.cwd(), dest));
-    path = `${ _defs2.default.defaults.pkgPath }${ _path.sep }${ template }`;
 
     if (!(yield (0, _fs.exists)(path))) {
-        (0, _output2.default)([`can not find the ${ template } template`, '']);
+        (0, _output2.default)([`can not find the ${template} template`, '']);
         process.exit(1);
     }
 
@@ -39,5 +38,5 @@ function* completion(template, dest = '.') {
     }
 
     yield (0, _fs.cp)(path, dest);
-    (0, _output2.default)([`Generated ${ dest }`, '']);
+    (0, _output2.default)([`Generated ${dest}`, '']);
 }

@@ -16,6 +16,7 @@ alias = {
     'ls': 'list',
     'c': 'config',
     'i': 'install',
+    'uni': 'uninstall',
     'v': 'version',
     '-v': 'version'
 }
