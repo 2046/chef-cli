@@ -7,6 +7,8 @@ exports.default = generate;
 
 var _path = require('path');
 
+var _clean = require('./clean');
+
 var _fs = require('./fs');
 
 function* generate(zip, dest) {
@@ -20,6 +22,8 @@ function* generate(zip, dest) {
     src = yield (0, _fs.unzip)(zip, `${info.dir}${_path.sep}${info.name}`);
     src += `${_path.sep}${(yield (0, _fs.readdir)(src))[0]}`;
 
+    yield (0, _fs.rm)(`${src}${_path.sep}.tag.js`);
+    yield (0, _clean.cleanTagScript)(`${src}${_path.sep}package.json`);
     yield (0, _fs.mkdir)(dest);
     yield (0, _fs.cp)(src, dest);
     yield (0, _fs.rmdir)(src);
