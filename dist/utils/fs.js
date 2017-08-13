@@ -26,6 +26,10 @@ var _coFs = require('co-fs');
 
 var _coFs2 = _interopRequireDefault(_coFs);
 
+var _rimraf = require('rimraf');
+
+var _rimraf2 = _interopRequireDefault(_rimraf);
+
 var _unzip = require('unzip');
 
 var _unzip2 = _interopRequireDefault(_unzip);
@@ -61,25 +65,29 @@ function* mkdir(path) {
 }
 
 function* readdir(path) {
-    return yield _coFs2.default.readdir(path);
+    let result = [];
+
+    for (let item of yield _coFs2.default.readdir(path)) {
+        if (item[0] === '.') {
+            continue;
+        }
+
+        result.push(item);
+    }
+
+    return result;
 }
 
 function* rmdir(path) {
-    if (yield exists(path)) {
-        for (let item of yield readdir(path)) {
-            let tmp = (0, _path.join)(path, item);
-
-            if ((yield _coFs2.default.lstat(tmp)).isDirectory()) {
-                yield rmdir(tmp);
-            } else {
-                yield _coFs2.default.unlink(tmp);
+    return new Promise((resolve, reject) => {
+        (0, _rimraf2.default)(path, err => {
+            if (err) {
+                return reject(false);
             }
-        }
 
-        yield _coFs2.default.rmdir(path);
-    }
-
-    return true;
+            resolve(true);
+        });
+    });
 }
 
 function* unzip(path, dest) {

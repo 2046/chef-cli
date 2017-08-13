@@ -1,6 +1,7 @@
 import _fs from 'fs'
 import ncp from 'ncp'
 import fs from 'co-fs'
+import rimraf from 'rimraf'
 import extract from 'unzip'
 import { join } from 'path'
 import inquirer from 'inquirer'
@@ -28,25 +29,29 @@ export function* mkdir(path) {
 }
 
 export function *readdir(path) {
-    return yield fs.readdir(path)
+    let result = []
+
+    for (let item of yield fs.readdir(path)) {
+        if (item[0] === '.') {
+            continue
+        }
+
+        result.push(item)
+    }
+
+    return result
 }
 
 export function* rmdir(path) {
-    if (yield exists(path)) {
-        for (let item of yield readdir(path)) {
-            let tmp = join(path, item)
-
-            if ((yield fs.lstat(tmp)).isDirectory()) {
-                yield rmdir(tmp)
-            } else {
-                yield fs.unlink(tmp)
+    return new Promise((resolve, reject) => {
+        rimraf(path, (err) => {
+            if (err) {
+                return reject(false)
             }
-        }
 
-        yield fs.rmdir(path)
-    }
-
-    return true
+            resolve(true)
+        })
+    })
 }
 
 export function* unzip(path, dest) {

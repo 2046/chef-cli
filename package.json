@@ -1,6 +1,6 @@
 {
   "name": "chef-cli",
-  "version": "1.2.3",
+  "version": "1.2.5",
   "description": "generator",
   "bin": {
     "chef": "./bin/chef"
@@ -32,6 +32,7 @@
     "ora": "^0.3.0",
     "progress": "^1.1.8",
     "request": "^2.79.0",
+    "rimraf": "^2.6.1",
     "semver": "^5.3.0",
     "text-table": "^0.2.0",
     "unzip": "^0.1.11"
