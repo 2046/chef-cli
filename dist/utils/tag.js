@@ -28,7 +28,9 @@ function* getRemoteTag(vars, repo, version = 'latest') {
     tags = yield get(`https://api.github.com/repos/${owner}/${repo}/tags`);
     tag = getTag(tags, version);
 
-    return tag ? Object.assign(tag, { zipUrl: `${vars.gitFile}${owner}/${repo}/legacy.zip/${tag.name}` }) : {};
+    return tag ? Object.assign(tag, { zipUrl: `${vars.gitFile}${owner}/${repo}/legacy.zip/${tag.name}` }) : {
+        zipUrl: `https://github.com/${owner}/${repo}/archive/${yield getDefaultBranch(vars, repo)}.zip`
+    };
 }
 
 function* getLocal(vars, name) {
@@ -59,6 +61,11 @@ function getTag(tags, version) {
     }
 
     return;
+}
+
+function* getDefaultBranch(vars, repo) {
+    var repoInfo = yield get(`https://api.github.com/repos/${(0, _path.parse)(vars.registry).base}/${repo}`);
+    return repoInfo.default_branch;
 }
 
 function* get(url) {
